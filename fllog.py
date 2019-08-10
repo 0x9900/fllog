@@ -340,7 +340,7 @@ def send_log(udp_packet):
 def dump_env(env):
   try:
     with open('/tmp/fllog.debug', 'ab+') as fdd:
-      for key, val in sortedenv.items()):
+      for key, val in sorted(env.items()):
         fdd.write("{} = {}\n".format(key, val))
       fdd.write("-" * 78 + "\n")
   except IOError as err:
