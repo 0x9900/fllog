@@ -337,11 +337,23 @@ def send_log(udp_packet):
     logging.error(err)
 
 
-def main():
+def dump_env(env):
+  try:
+    with open('/tmp/fllog.debug', 'ab+') as fdd:
+      for key, val in sortedenv.items()):
+        fdd.write("{} = {}\n".format(key, val))
+      fdd.write("-" * 78 + "\n")
+  except IOError as err:
+    logging.error(err)
+
+def main(argv=sys.argv[1:]):
   env = {k: v for k, v in os.environ.items() if k.startswith('FLDIGI')}
   if not env:
     logging.error('FLDIDI environement variable not set.\n%s', __doc__)
     sys.exit(os.EX_USAGE)
+
+  if argv and argv[0] == '-d':
+    dump_env(env)
 
   adif = ADIF(env)
   packet = make_udp_packet(adif)

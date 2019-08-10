@@ -5,7 +5,7 @@
 #
 
 if [[ $(id -u) != 0 ]]; then
-    echo "\nError: this install script need to be run with root privileges"
+    echo "Error: this install script need to be run with root privileges"
     echo "Enter the following line at the prompt to install fllog"
     echo "sudo ./install.sh"
     exit 1
