@@ -2,9 +2,14 @@
 
 ## Log fldigi QSO on MacLoggerDX
 
-This simple program is called from an flgigi macro to log your QSO on MacLoggerDX.
+This simple program is called from an flgigi macro to log your QSO on
+MacLoggerDX. The program name is `fllog`. It communicates with the
+logging software through UDP. In order to work the logging software
+needs to be running. You also need to enable UDP on the logging
+software.
 
-# installation
+
+# Installation
 
 ```
 $ sudo ./install.sh
