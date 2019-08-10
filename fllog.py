@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 #
-# (c) Fred C (W6BSD)
+# (C) 2019 Fred C. (W6BSD)
+# https://github.com/0x9900/fllog
 #
+
 """
 Usage:
 
@@ -31,7 +33,7 @@ PORTNUM = 2237
 
 # enter the data content of the UDP packet as hex
 ADIF_VER = "3.1.0"
-PROGRAM_ID = "WSJT-X"
+PROGRAM_ID = "FLDIGI"
 
 MAGIC_NUMBER = 0XADBCCBDA         # Magic number never changes.
 SCHEMA_NUMBER = 0x2
@@ -306,7 +308,8 @@ class ADIF(Mapping):
 
   @property
   def comment(self):
-    return self._gen_field('comment', self['FLDIGI_LOG_NOTES'])
+    data = "{}: {}".format(PROGRAM_ID, self['FLDIGI_LOG_NOTES'])
+    return self._gen_field('comment', data)
 
   @staticmethod
   def _gen_field(label, value):
