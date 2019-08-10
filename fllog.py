@@ -25,7 +25,7 @@ import time
 from collections import Mapping
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
-                    datefmt='%H:%M:%S', level=logging.DEBUG)
+                    datefmt='%H:%M:%S', level=logging.INFO)
 
 
 IPADDR = '127.0.0.1'
@@ -230,6 +230,9 @@ class ADIF(Mapping):
   def __len__(self):
     return len(self._data)
 
+  def who(self):
+    return self['FLDIGI_LOG_CALL']
+
   def __str__(self):
     attrs = (
       'call', 'mode', 'freq', 'gridsquare', 'rst_rcvd', 'rst_sent',
@@ -328,7 +331,10 @@ def make_udp_packet(adif):
 
 def send_log(udp_packet):
   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-  sock.sendto(udp_packet, (IPADDR, PORTNUM))
+  try:
+    sock.sendto(udp_packet, (IPADDR, PORTNUM))
+  except socket.error as err:
+    logging.error(err)
 
 
 def main():
@@ -340,6 +346,7 @@ def main():
   adif = ADIF(env)
   packet = make_udp_packet(adif)
   send_log(packet)
+  logging.info('Contact with `%s` logged', adif.who())
 
 if __name__ == "__main__":
   main()
