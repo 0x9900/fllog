@@ -8,6 +8,8 @@ logging software through UDP. In order to work the logging software
 needs to be running. You also need to enable UDP on the logging
 software.
 
+For more information on how to use that program go to
+https://0x9900.com/logging-on-macloggerdx-with-fldigi/
 
 # Installation
 
