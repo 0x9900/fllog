@@ -295,19 +295,43 @@ class ADIF(Mapping):
 
   @property
   def qso_date(self):
-    return self._gen_field('qso_date', time.strftime('%Y%m%d', time.gmtime()))
+    # We read the date from fldigi, if the date has the wrong format
+    # we get today's date.
+    try:
+      date_on = time.strptime(self['FLDIGI_LOG_DATE'], '%Y%m%d')
+    except ValueError:
+      date_on = time.gmtime()
+    return self._gen_field('qso_date', time.strftime('%Y%m%d', date_on))
 
   @property
   def qso_date_off(self):
-    return self._gen_field('qso_date_off', time.strftime('%Y%m%d', time.gmtime()))
+    # We read the date from fldigi, if the date has the wrong format
+    # we get today's date.
+    try:
+      date_off = time.strptime(self['FLDIGI_LOG_DATE_OFF'], '%Y%m%d')
+    except ValueError:
+      date_off = time.gmtime()
+    return self._gen_field('qso_date_off', time.strftime('%Y%m%d', date_off))
 
   @property
   def time_on(self):
-    return self._gen_field('time_on', time.strftime('%H%M%D', time.gmtime()))
+    # We read the time from fldigi, if the time has the wrong format
+    # we get current time.
+    try:
+      time_on = time.strptime(self['FLDIGI_LOG_TIME_ON'], '%H%M')
+    except ValueError:
+      time_on = time.gmtime()
+    return self._gen_field('time_on', time.strftime('%H%M%S', time_on))
 
   @property
   def time_off(self):
-    return self._gen_field('time_off', time.strftime('%H%M%S', time.gmtime()))
+    # We read the time from fldigi, if the time has the wrong format
+    # we get current time.
+    try:
+      time_off = time.strptime(self['FLDIGI_LOG_TIME_OFF'], '%H%M')
+    except ValueError:
+      time_off = time.gmtime()
+    return self._gen_field('time_off', time.strftime('%H%M%S', time_off))
 
   @property
   def comment(self):
