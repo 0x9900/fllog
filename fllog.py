@@ -5,7 +5,7 @@
 #
 
 """
-Usage:
+%(prog)s [options]
 
 Create a macro "LOG" in fldigi with the following line:
 <EXEC><path where the program has been installed>fllog</EXEC>
@@ -22,6 +22,7 @@ import struct
 import sys
 import time
 
+from argparse import ArgumentParser
 from collections import Mapping
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
@@ -353,10 +354,10 @@ def make_udp_packet(adif):
 
   return packet
 
-def send_log(udp_packet):
+def send_log(ipaddr, portnum, udp_packet):
   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
   try:
-    sock.sendto(udp_packet, (IPADDR, PORTNUM))
+    sock.sendto(udp_packet, (ipaddr, portnum))
   except socket.error as err:
     logging.error(err)
 
@@ -370,18 +371,38 @@ def dump_env(env):
   except IOError as err:
     logging.error(err)
 
-def main(argv=sys.argv[1:]):
+
+def parse_arguments():
+  """Parse the command arguments"""
+  parser = ArgumentParser(description="fldigi to macloggerdx logger",
+                          usage=__doc__)
+  parser.add_argument('-d', '--debug', action="store_true", default=False,
+                      help='Dump the fldigi environment variables')
+  parser.add_argument('-i', '--ipaddress', default=IPADDR,
+                      help="Macloggerdx ip address [default: %(default)s]")
+  parser.add_argument('-p', '--port', default=PORTNUM,
+                      help="Macloggerdx port number [default: %(default)s]")
+  opts = parser.parse_args()
+  return opts
+
+
+def main():
+  opts = parse_arguments()
+
   env = {k: v for k, v in os.environ.items() if k.startswith('FLDIGI')}
   if not env:
-    logging.error('FLDIDI environement variable not set.\n%s', __doc__)
+    logging.error(
+      'FLDIDI environement variable not set. For more info\n'
+      'go to https://0x9900.com/logging-on-macloggerdx-with-fldigi/'
+    )
     sys.exit(os.EX_USAGE)
 
-  if argv and argv[0] == '-d':
+  if opts.debug:
     dump_env(env)
 
   adif = ADIF(env)
   packet = make_udp_packet(adif)
-  send_log(packet)
+  send_log(opts.ipaddress, opts.port, packet)
   logging.info('Contact with `%s` logged', adif.who())
 
 if __name__ == "__main__":
