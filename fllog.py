@@ -296,22 +296,18 @@ class ADIF(Mapping):
 
   @property
   def qso_date(self):
-    # We read the date from fldigi, if the date has the wrong format
-    # we get today's date.
-    try:
-      date_on = time.strptime(self['FLDIGI_LOG_DATE'], '%Y%m%d')
-    except ValueError:
-      date_on = time.gmtime()
+    # Fldigi does weird things with the date and often likes to put a
+    # date far in the past.
+    # Log today's
+    date_on = time.gmtime()
     return self._gen_field('qso_date', time.strftime('%Y%m%d', date_on))
 
   @property
   def qso_date_off(self):
-    # We read the date from fldigi, if the date has the wrong format
-    # we get today's date.
-    try:
-      date_off = time.strptime(self['FLDIGI_LOG_DATE_OFF'], '%Y%m%d')
-    except ValueError:
-      date_off = time.gmtime()
+    # Fldigi does weird things with the date and often likes to put a
+    # date far in the past.
+    # Log today's
+    date_off = time.gmtime()
     return self._gen_field('qso_date_off', time.strftime('%Y%m%d', date_off))
 
   @property
@@ -366,8 +362,8 @@ def dump_env(env):
   try:
     with open('/tmp/fllog.debug', 'ab+') as fdd:
       for key, val in sorted(env.items()):
-        fdd.write('export {}="{}\n"'.format(key, val.replace('"', '\"')))
-      fdd.write("-" * 78 + "\n")
+        fdd.write('export {}="{}"\n'.format(key, val.replace('"', '\"')))
+      fdd.write("#" "-" * 76 + "\n")
   except IOError as err:
     logging.error(err)
 
