@@ -366,7 +366,7 @@ def dump_env(env):
   try:
     with open('/tmp/fllog.debug', 'ab+') as fdd:
       for key, val in sorted(env.items()):
-        fdd.write("{} = {}\n".format(key, val))
+        fdd.write('export {}="{}\n"'.format(key, val.replace('"', '\"')))
       fdd.write("-" * 78 + "\n")
   except IOError as err:
     logging.error(err)
