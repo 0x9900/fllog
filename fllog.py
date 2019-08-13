@@ -44,6 +44,8 @@ MESSAGE_ID = 0x57534a542d580000
 PACKET_STRUCT = '!LLLLQH%ds'
 
 
+# MacLoggerDX will accept anything for mode. This mapping for the
+# modes accepted by lotw.
 ADIFMAP = {
   'CLOVER': 'CLOVER',
   'AM': 'AM',
@@ -117,7 +119,7 @@ ADIFMAP = {
   'JT9H': 'JT9',
   'JT9HFAST': 'JT9',
   'LSB': 'SSB',
-  'MFSK11': 'DATA',
+  'MFSK11': 'MFSK11',
   'MFSK128': 'DATA',
   'MFSK16': 'MFSK16',
   'MFSK22': 'DATA',
@@ -220,6 +222,11 @@ class ADIF(Mapping):
   def __init__(self, data=None):
     self._data = data
 
+    # Fldigi does weird things with the date and often likes to put a
+    # date far in the past.
+    # Log today's
+    self.gmtnow = time.gmtime()
+
   def __getitem__(self, key):
     if key in self._data:
       return self._data[key]
@@ -296,48 +303,34 @@ class ADIF(Mapping):
 
   @property
   def qso_date(self):
-    # Fldigi does weird things with the date and often likes to put a
-    # date far in the past.
-    # Log today's
-    date_on = time.gmtime()
-    return self._gen_field('qso_date', time.strftime('%Y%m%d', date_on))
+    return self._gen_field('qso_date', time.strftime('%Y%m%d', self.gmtnow))
 
   @property
   def qso_date_off(self):
-    # Fldigi does weird things with the date and often likes to put a
-    # date far in the past.
-    # Log today's
-    date_off = time.gmtime()
-    return self._gen_field('qso_date_off', time.strftime('%Y%m%d', date_off))
+    return self._gen_field('qso_date_off', time.strftime('%Y%m%d', self.gmtnow))
 
   @property
   def time_on(self):
-    # We read the time from fldigi, if the time has the wrong format
-    # we get current time.
-    try:
-      time_on = time.strptime(self['FLDIGI_LOG_TIME_ON'], '%H%M')
-    except ValueError:
-      time_on = time.gmtime()
-    return self._gen_field('time_on', time.strftime('%H%M%S', time_on))
+    return self._gen_field('time_on', time.strftime('%H%M%S', self.gmtnow))
 
   @property
   def time_off(self):
-    # We read the time from fldigi, if the time has the wrong format
-    # we get current time.
-    try:
-      time_off = time.strptime(self['FLDIGI_LOG_TIME_OFF'], '%H%M')
-    except ValueError:
-      time_off = time.gmtime()
-    return self._gen_field('time_off', time.strftime('%H%M%S', time_off))
+    return self._gen_field('time_off', time.strftime('%H%M%S', self.gmtnow))
 
   @property
   def comment(self):
-    data = "{}: {}".format(PROGRAM_ID, self['FLDIGI_LOG_NOTES'])
-    return self._gen_field('comment', data)
+    fields = (
+      PROGRAM_ID,
+      self['FLDIGI_MODEM_LONG_NAME'],
+      self['FLDIGI_LOG_NOTES']
+    )
+    fields = [f for f in fields if f]
+    comment = ': '.join(fields)
+    return self._gen_field('comment', comment)
 
   @staticmethod
   def _gen_field(label, value):
-    return "<{}:{:d}>{} ".format(label, len(value), value)
+    return "<{}:{:d}>{}".format(label, len(value), value)
 
 
 def make_udp_packet(adif):
