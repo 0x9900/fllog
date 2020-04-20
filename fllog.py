@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# (C) 2019 Fred C. (W6BSD)
+# (C) 2019-2020 Fred C. (W6BSD)
 # https://github.com/0x9900/fllog
 #
 
@@ -186,6 +186,11 @@ ADIFMAP = {
   'SSTV': 'SSTV',
   'T10': 'T10',
   'THOR': 'THOR',
+  'THOR4': 'THOR',
+  'THOR5': 'THOR',
+  'THOR8': 'THOR',
+  'THOR11': 'THOR',
+  'THOR16': 'THOR',
   'THRBX': 'THROB',
   'THROB': 'THROB',
   'USB': 'SSB',
@@ -245,7 +250,7 @@ class ADIF(Mapping):
     attrs = (
       'call', 'mode', 'freq', 'gridsquare', 'rst_rcvd', 'rst_sent',
       'qso_date', 'qso_date_off', 'time_on', 'time_off',
-      'comment'
+      'serno_in', 'serno_out', 'comment'
     )
     fields = [self.header, '\n']
     for attr in attrs:
@@ -318,6 +323,20 @@ class ADIF(Mapping):
     return self._gen_field('time_off', time.strftime('%H%M%S', self.gmtnow))
 
   @property
+  def serno_in(self):
+    if self['FLDIGI_LOG_SERNO_IN']:
+      return self._gen_field('serno_in', self['FLDIGI_LOG_SERNO_IN'])
+    else:
+      return ''
+
+  @property
+  def serno_out(self):
+    if self['FLDIGI_LOG_SERNO_OUT']:
+      return self._gen_field('serno_out', self['FLDIGI_LOG_SERNO_OUT'])
+    else:
+      return ''
+
+  @property
   def comment(self):
     fields = (
       PROGRAM_ID,
@@ -356,7 +375,7 @@ def dump_env(env):
     with open('/tmp/fllog.debug', 'ab+') as fdd:
       for key, val in sorted(env.items()):
         fdd.write('export {}="{}"\n'.format(key, val.replace('"', '\"')))
-      fdd.write("#" "-" * 76 + "\n")
+      fdd.write("#" + "-" * 76 + "\n")
   except IOError as err:
     logging.error(err)
 

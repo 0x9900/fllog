@@ -13,6 +13,7 @@ fi
 
 echo
 echo "Installing fllog into /usr/local/bin"
+/bin/mkdir -p /usr/local/bin
 /bin/cp ./fllog.py /usr/local/bin/fllog
 /bin/chmod a=rwx,og=rx /usr/local/bin/fllog
 
