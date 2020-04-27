@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # (C) 2019 Fred C. (W6BSD)
 # https://github.com/0x9900/fllog
