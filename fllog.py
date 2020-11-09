@@ -377,12 +377,15 @@ def send_log(ipaddr, portnum, udp_packet):
     logging.error(err)
 
 
-def dump_env(env):
+def dump_env(env, adif):
   try:
     with open('/tmp/fllog.debug', 'ab+') as fdd:
       for key, val in sorted(env.items()):
         fdd.write('export {}="{}"\n'.format(key, val.replace('"', '\"')))
       fdd.write("#" + "-" * 76 + "\n")
+      fdd.write(str(adif))
+      fdd.write("\n#" + "=" * 76 + "\n")
+
   except IOError as err:
     logging.error(err)
 
@@ -412,10 +415,11 @@ def main():
     )
     sys.exit(os.EX_USAGE)
 
-  if opts.debug:
-    dump_env(env)
-
   adif = ADIF(env)
+
+  if opts.debug:
+    dump_env(env, adif)
+
   packet = make_udp_packet(adif)
   send_log(opts.ipaddress, opts.port, packet)
   logging.info('Contact with `%s` logged', adif.who())
