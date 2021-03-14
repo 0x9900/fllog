@@ -23,7 +23,11 @@ import sys
 import time
 
 from argparse import ArgumentParser
-from collections import Mapping
+
+if sys.version_info.major == 2:
+  from collections import Mapping
+else:
+  from collections.abc import Mapping
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
                     datefmt='%H:%M:%S', level=logging.INFO)
@@ -360,8 +364,8 @@ class ADIF(Mapping):
 
 
 def make_udp_packet(adif):
-  count = time.time() % 0xFFFF
-  adif_data = str(adif)
+  count = int(time.time() % 0xFFFF)
+  adif_data = str(adif).encode(encoding='utf-8')
   data_struct = PACKET_STRUCT % len(adif_data)
 
   packet = struct.pack(data_struct, MAGIC_NUMBER, SCHEMA_NUMBER,
