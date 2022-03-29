@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # (C) 2019-2020 Fred C. (W6BSD)
 # https://github.com/0x9900/fllog
@@ -299,7 +299,8 @@ class ADIF(Mapping):
 
   @property
   def freq(self):
-    return self._gen_field('freq', str(float(self['FLDIGI_FREQUENCY']) / 1000000))
+    return self._gen_field('freq',
+                           str(float(self['FLDIGI_FREQUENCY']) / 1000000))
 
   @property
   def station_callsign(self):
@@ -323,7 +324,8 @@ class ADIF(Mapping):
 
   @property
   def qso_date_off(self):
-    return self._gen_field('qso_date_off', time.strftime('%Y%m%d', self.gmtnow))
+    return self._gen_field('qso_date_off',
+                           time.strftime('%Y%m%d', self.gmtnow))
 
   @property
   def time_on(self):
@@ -383,7 +385,7 @@ def send_log(ipaddr, portnum, udp_packet):
 
 def dump_env(env, adif):
   try:
-    with open('/tmp/fllog.debug', 'ab+') as fdd:
+    with open('/tmp/fllog.debug', 'a+') as fdd:
       for key, val in sorted(env.items()):
         fdd.write('export {}="{}"\n'.format(key, val.replace('"', '\"')))
       fdd.write("#" + "-" * 76 + "\n")
@@ -411,7 +413,7 @@ def parse_arguments():
 def main():
   opts = parse_arguments()
 
-  env = {k: v for k, v in os.environ.items() if k.startswith('FLDIGI')}
+  env = {k: v for k, v in list(os.environ.items()) if k.startswith('FLDIGI')}
   if not env:
     logging.error(
       'FLDIDI environement variable not set. For more info\n'
