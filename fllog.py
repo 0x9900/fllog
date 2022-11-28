@@ -17,36 +17,24 @@ For example:
 import logging
 import os
 import re
-import socket
-import struct
 import sys
 import time
 
 from argparse import ArgumentParser
-
-if sys.version_info.major == 2:
-  from collections import Mapping
-else:
-  from collections.abc import Mapping
+from collections.abc import Mapping
+from subprocess import Popen
+from tempfile import NamedTemporaryFile
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
                     datefmt='%H:%M:%S', level=logging.INFO)
 
+TMP_PATH = '/var/tmp'
 
 IPADDR = '127.0.0.1'
 PORTNUM = 2237
 
-# enter the data content of the UDP packet as hex
 ADIF_VER = "3.1.0"
 PROGRAM_ID = "FLDIGI"
-
-MAGIC_NUMBER = 0XADBCCBDA         # Magic number never changes.
-SCHEMA_NUMBER = 0x2
-MESSAGE_TYPE = 0xC
-MESSAGE_ID = 0x57534a542d580000
-
-PACKET_STRUCT = '!LLLLQH%ds'
-
 
 # MacLoggerDX will accept anything for mode. This mapping for the
 # modes accepted by lotw.
@@ -339,15 +327,13 @@ class ADIF(Mapping):
   def serno_in(self):
     if self['FLDIGI_LOG_SERNO_IN']:
       return self._gen_field('serno_in', self['FLDIGI_LOG_SERNO_IN'])
-    else:
-      return ''
+    return ''
 
   @property
   def serno_out(self):
     if self['FLDIGI_LOG_SERNO_OUT']:
       return self._gen_field('serno_out', self['FLDIGI_LOG_SERNO_OUT'])
-    else:
-      return ''
+    return ''
 
   @property
   def comment(self):
@@ -362,39 +348,37 @@ class ADIF(Mapping):
 
   @staticmethod
   def _gen_field(label, value):
-    return "<{}:{:d}>{}".format(label, len(value), value)
-
-
-def make_udp_packet(adif):
-  count = int(time.time() % 0xFFFF)
-  adif_data = str(adif).encode(encoding='utf-8')
-  data_struct = PACKET_STRUCT % len(adif_data)
-
-  packet = struct.pack(data_struct, MAGIC_NUMBER, SCHEMA_NUMBER,
-                       MESSAGE_TYPE, 0x06, MESSAGE_ID, count, adif_data)
-
-  return packet
-
-def send_log(ipaddr, portnum, udp_packet):
-  sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-  try:
-    sock.sendto(udp_packet, (ipaddr, portnum))
-  except socket.error as err:
-    logging.error(err)
+    return f"<{label}:{len(value):d}>{value}"
 
 
 def dump_env(env, adif):
   try:
-    with open('/tmp/fllog.debug', 'a+') as fdd:
+    with open('/tmp/fllog.debug', 'a+', encoding='utf-8') as fdd:
       for key, val in sorted(env.items()):
-        fdd.write('export {}="{}"\n'.format(key, val.replace('"', '\"')))
+        val = val.replace('"', '\"')
+        fdd.write(f'export {key}="{val}"\n')
       fdd.write("#" + "-" * 76 + "\n")
       fdd.write(str(adif))
       fdd.write("\n#" + "=" * 76 + "\n")
-
   except IOError as err:
     logging.error(err)
 
+def send_adif(adif):
+  try:
+    with NamedTemporaryFile(mode='w', dir= TMP_PATH, prefix='fldigi-', suffix='.adi',
+                            encoding='utf-8', delete=False) as temp:
+      temp.write(str(adif))
+      temp.write('\n')
+  except IOError as err:
+    logging.error(err)
+    return
+
+  try:
+    cmd = ['/usr/bin/open', '-b', 'com.dogparksoftware.MacLoggerDX', temp.name]
+    with Popen(cmd, shell=False) as proc:
+      proc.wait()
+  except IOError as err:
+    logging.error(err)
 
 def parse_arguments():
   """Parse the command arguments"""
@@ -416,7 +400,7 @@ def main():
   env = {k: v for k, v in list(os.environ.items()) if k.startswith('FLDIGI')}
   if not env:
     logging.error(
-      'FLDIDI environement variable not set. For more info\n'
+      'FLDIDI environement variable not set.\n\t\tFor more information '
       'go to https://0x9900.com/logging-on-macloggerdx-with-fldigi/'
     )
     sys.exit(os.EX_USAGE)
@@ -426,8 +410,7 @@ def main():
   if opts.debug:
     dump_env(env, adif)
 
-  packet = make_udp_packet(adif)
-  send_log(opts.ipaddress, opts.port, packet)
+  send_adif(adif)
   logging.info('Contact with `%s` logged', adif.who())
 
 if __name__ == "__main__":
