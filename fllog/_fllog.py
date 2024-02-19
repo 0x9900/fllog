@@ -50,6 +50,7 @@ PORTNUM = 2237
 ADIF_VER = "3.1.0"
 PROGRAM_ID = "FLDIGI / FLLOG"
 
+
 class ADIF(Mapping):
   # pylint: disable=too-many-public-methods
 
