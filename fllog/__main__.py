@@ -23,21 +23,21 @@ import logging
 import os
 import re
 import socket
-import sys
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser
 from collections.abc import Mapping
-from datetime import datetime
 from pathlib import Path
 from subprocess import Popen
 from tempfile import NamedTemporaryFile
 
-import wsjtx
-
-if sys.version_info.major + sys.version_info.minor / 100 >= 3.12:
-  from datetime import UTC
-else:
-  from datetime import timezone
+try:
+  from datetime import UTC  # python 3.12 and up
+  from datetime import datetime
+except ImportError:
+  from datetime import timezone  # python 3.10
+  from datetime import datetime
   UTC = timezone.utc
+
+from fllog import wsjtx
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
                     datefmt='%H:%M:%S', level=logging.INFO)
@@ -52,7 +52,7 @@ PROGRAM_ID = "FLDIGI / FLLOG"
 
 # MacLoggerDX will accept anything for mode. This mapping for the
 # modes accepted by lotw.
-ADIFMAP = {
+MODEMAP = {
   'CLOVER': 'CLOVER',
   'AM': 'AM',
   'AMTOR': 'AMTOR',
@@ -213,10 +213,10 @@ ADIFMAP = {
 }
 
 
-class ADIFMap(Mapping):
+class MODEMap(Mapping):
   def __init__(self):
     self._clean = re.compile('[^A-Z0-9]+')
-    self._map = ADIFMAP
+    self._map = MODEMAP
 
   def clean(self, value):
     return self._clean.sub('', value.upper())
@@ -235,11 +235,11 @@ class ADIFMap(Mapping):
 
 
 # Create an global instance
-adifmap = ADIFMap()
+modemap = MODEMap()
 
 
 class ADIF(Mapping):
-
+  # pylint: disable=too-many-public-methods
   def __init__(self, data=None):
     self._data = data
 
@@ -310,7 +310,7 @@ class ADIF(Mapping):
 
   @property
   def mode(self):
-    return adifmap.get(self['FLDIGI_MODEM_ADIF_NAME'])
+    return modemap.get(self['FLDIGI_MODEM_ADIF_NAME'])
 
   @property
   def gridsquare(self):
