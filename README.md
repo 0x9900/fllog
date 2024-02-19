@@ -29,13 +29,16 @@ Running the program `fllog` with the option `--help` will give you the
 complete list of options.
 
 ```bash
+$ fllog --help
 usage:
-fllog [options]
+fllog [pipe | udp]
 
 This program is a companion program to log from fldigi to MacLoggerDX.
 
 Create a macro "LOG" in fldigi with the following line:
-<EXEC><path where the program has been installed>fllog [mode]</EXEC>
+<EXEC>/usr/local/bin/fllog [mode]</EXEC>
+
+ > Replace /usr/local/bin with the path to the program.
 
 The mode can be either "udp" or "pipe"
 For more information call "fllog --help" on a terminal
@@ -54,6 +57,7 @@ options:
   -h, --help            show this help message and exit
   -a ADIF, --adif ADIF  Backup the log entries into an AIDF file
   -d, --debug           Dump the fldigi environment variables
+
 ```
 
 The arguments for the subcommand udp are:
