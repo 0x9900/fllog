@@ -5,7 +5,7 @@
 This simple program is called from a fldigi macro to log your QSO on
 MacLoggerDX.
 
-The program `fllog` can send log to MacLoggerDX locally or through the network.
+The program `fllog` can log QSOs to MacLoggerDX locally or through the network.
 
 For more information on how to use that program, go to
 https://0x9900.com/logging-on-macloggerdx-with-fldigi/
@@ -16,7 +16,7 @@ https://0x9900.com/logging-on-macloggerdx-with-fldigi/
 $ pip install fllog
 ```
 
-Once the program is installed, you need to create a [macro][1] in fldigi to log the QSO.
+Once the program is installed, you must create a [macro][1] in fldigi to log the QSO.
 
 ```
 <EXEC>/usr/local/bin/fllog pipe</EXEC>
@@ -41,12 +41,12 @@ Create a macro "LOG" in fldigi with the following line:
  > Replace /usr/local/bin with the path to the program.
 
 The mode can be either "udp" or "pipe"
-For more information call "fllog --help" on a terminal
+For more information, call "fllog --help" on a terminal
 
 For example:
 <EXEC>/usr/local/bin/fllog udp --ipaddress 127.0.0.1 --port 2237</EXEC>
 
-fldigi to macloggerdx logger
+fldigi to MacLoggerDX logger
 
 positional arguments:
   {pipe,udp}
@@ -66,7 +66,7 @@ The arguments for the subcommand udp are:
 options:
   -h, --help            show this help message and exit
   -i IPADDRESS, --ipaddress IPADDRESS
-						Macloggerdx ip address [default: 127.0.0.1]
+                        Macloggerdx ip address [default: 127.0.0.1]
   -p PORT, --port PORT  Macloggerdx port number [default: 2237]
 ```
 
@@ -79,6 +79,20 @@ QSL: LoTW, DIRECT
 <ZDT> <CALL> de <MYCALL> sk
 <RX>
 <EXEC>/usr/local/bin/fllog pipe</EXEC>
+<LOG>
+```
+
+The following example is the macro I use on my Linux machine to log the fldigi contact to MacLoggerDX running on my Mac.
+
+In the following example, `fldigi` logs the contact to the machine `192.168.10.175`, using the default port, and also saves the contacts into the file `/home/fred/logbook.adif`.
+
+```
+<NAME>, Thank you for the QSO on <BAND> / <MODE>.
+I look forward to seeing your signal on my waterfall, 73.
+QSL: LoTW, DIRECT
+<ZDT> <CALL> de <MYCALL> sk
+<RX>
+<EXEC>/usr/local/bin/fllog --ipaddress 192.168.10.175 --adif /home/fred/logbook.adif</EXEC>
 <LOG>
 ```
 
