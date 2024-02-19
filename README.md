@@ -28,8 +28,7 @@ Once the program is installed, you need to create a [macro][1] in fldigi to log 
 Running the program `fllog` with the option `--help` will give you the
 complete list of options.
 
-:::bash
-
+```bash
     usage:
     fllog [options]
 
@@ -55,21 +54,21 @@ complete list of options.
       -h, --help            show this help message and exit
       -a ADIF, --adif ADIF  Backup the log entries into an AIDF file
       -d, --debug           Dump the fldigi environment variables
-
+```
 
 The arguments for the subcommand udp are:
 
-:::bash
+```bash
 	options:
 	  -h, --help            show this help message and exit
 	  -i IPADDRESS, --ipaddress IPADDRESS
 							Macloggerdx ip address [default: 127.0.0.1]
 	  -p PORT, --port PORT  Macloggerdx port number [default: 2237]
-
+```
 
 ## Macro example
 
-:::text
+```
 	<NAME>, Thank you for the QSO on <BAND> / <MODE>.
 	I look forward to seeing your signal on my waterfall, 73.
 	QSL: LoTW, DIRECT
@@ -77,5 +76,7 @@ The arguments for the subcommand udp are:
 	<RX>
 	<EXEC>/usr/local/bin/fllog pipe</EXEC>
 	<LOG>
+```
+
 
 [1]: http://www.w1hkj.com/FldigiHelp/macros_sub_page.html
