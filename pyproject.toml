@@ -1,0 +1,55 @@
+[build-system]
+  build-backend = "setuptools.build_meta"
+  requires = ["setuptools", "setuptools_scm[toml]", "wheel"]
+
+[project]
+  name = "fllog"
+  readme = "README.md"
+  description = "Log contact made on fldigi to MacLoggerDX."
+  license = {file = "LICENSE"}
+  dynamic = ["version"]
+  requires-python = ">=3.10"
+  authors = [
+    { name = "Fred C. (W6BSD)" },
+  ]
+  classifiers = [
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Telecommunications Industry",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python",
+    "Topic :: Communications :: Ham Radio"
+  ]
+  dependencies = [
+  ]
+
+[tool.setuptools]
+    include-package-data = true
+
+[tool.setuptools_scm]
+    write_to = "fllog/_version.py"
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "ipdb",
+    "flake8",
+    "mypy",
+    "isort",
+]
+
+[project.urls]
+  Documentation = "https://github.com/0x9900/fllog/"
+  Source = "https://github.com/0x9900/fllog"
+  Tracker = "https://github.com/0x9900/fllog/issues"
+
+[project.scripts]
+  fllog = "fllog:main"
+
+[tool.setuptools.packages.find]
+    include = ["fllog*"]
+
+#

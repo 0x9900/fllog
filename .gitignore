@@ -4,9 +4,13 @@
 .\#*
 
 environ.sh
+*.swp
+*.swo
+*.debug
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+_version.py
 *.py[cod]
 *$py.class
 
