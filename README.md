@@ -86,13 +86,15 @@ The following example is the macro I use on my Linux machine to log the fldigi c
 
 In the following example, `fldigi` logs the contact to the machine `192.168.10.175`, using the default port, and also saves the contacts into the file `/home/fred/logbook.adif`.
 
+ > _Note:_ The arguments `--adif` and `--debug` are global arguments and need to be placed before the mode (pipe|udp).
+
 ```
 <NAME>, Thank you for the QSO on <BAND> / <MODE>.
 I look forward to seeing your signal on my waterfall, 73.
 QSL: LoTW, DIRECT
 <ZDT> <CALL> de <MYCALL> sk
 <RX>
-<EXEC>/usr/local/bin/fllog --ipaddress 192.168.10.175 --adif /home/fred/logbook.adif</EXEC>
+<EXEC>/usr/local/bin/fllog --adif /home/fred/logbook.adif udp --ipaddress 192.168.10.175</EXEC>
 <LOG>
 ```
 
