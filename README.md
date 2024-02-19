@@ -29,6 +29,7 @@ Running the program `fllog` with the option `--help` will give you the
 complete list of options.
 
 :::bash
+
     usage:
     fllog [options]
 
