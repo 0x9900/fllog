@@ -5,12 +5,14 @@
 #
 
 """
-%(prog)s [options]
+%(prog)s [pipe | udp]
 
 This program is a companion program to log from fldigi to MacLoggerDX.
 
 Create a macro "LOG" in fldigi with the following line:
-<EXEC><path where the program has been installed>fllog [mode]</EXEC>
+<EXEC>/usr/local/bin/fllog [mode]</EXEC>
+
+ > Replace /usr/local/bin with the path to the program.
 
 The mode can be either "udp" or "pipe"
 For more information call "fllog --help" on a terminal
