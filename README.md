@@ -2,55 +2,79 @@
 
 ## Log fldigi QSO on MacLoggerDX
 
-This simple program is called from a flgigi macro to log your QSO on
-MacLoggerDX. The program name is `fllog`. It communicates with the
-logging software through UDP. To work the logging software
-needs to be running. You also need to enable UDP on the logging
-software.
+This simple program is called from a fldigi macro to log your QSO on
+MacLoggerDX.
 
-For more information on how to use that program go to
+The program `fllog` can send log to MacLoggerDX locally or through the network.
+
+For more information on how to use that program, go to
 https://0x9900.com/logging-on-macloggerdx-with-fldigi/
 
 ## Installation
 
 ```
-$ sudo ./install.sh
+$ pip install fllog
 ```
 
-To complete the installation, you need to create a logging macro in
-fldigi.  Right-click on the macro button you use for logging and copy
-the following line at the end.
+Once the program is installed, you need to create a [macro][1] in fldigi to log the QSO.
 
 ```
-<EXEC>/usr/local/bin/fllog</EXEC>
+<EXEC>/usr/local/bin/fllog pipe</EXEC>
 ```
+ > Replace `/usr/local/bin` with the path to the program.
 
 ## Usage
 
-Running the program fllog with the option `--help` will give you the
+Running the program `fllog` with the option `--help` will give you the
 complete list of options.
 
-`--ipaddress <ipaddr> | -i <ipaddr>` Specify the IP address of the
-computer running MacLoggerDX. By default the IP is 127.0.0.1.
+:::bash
+    usage:
+    fllog [options]
 
-`--port <portnum> | -p <portnum>` Specify the port number where
-MacLoggerDX is listening for adif packets. By default the port is
-2237.
+    This program is a companion program to log from fldigi to MacLoggerDX.
 
-`--debug | -d` This option is only for debugging purpose. All the
-fldigi variable will dump in the fldigi input the screen. Be careful
-playing with this option since you might send all your environment
-over the air. As an example, here is the macro I use to end my QSO:
+    Create a macro "LOG" in fldigi with the following line:
+    <EXEC><path where the program has been installed>fllog [mode]</EXEC>
+
+    The mode can be either "udp" or "pipe"
+    For more information call "fllog --help" on a terminal
+
+    For example:
+    <EXEC>/usr/local/bin/fllog udp --ipaddress 127.0.0.1 --port 2237</EXEC>
+
+    fldigi to macloggerdx logger
+
+    positional arguments:
+      {pipe,udp}
+        pipe                The log will be sent using a pipe command
+        udp                 The log will be sent using UDP
+
+    options:
+      -h, --help            show this help message and exit
+      -a ADIF, --adif ADIF  Backup the log entries into an AIDF file
+      -d, --debug           Dump the fldigi environment variables
+
+
+The arguments for the subcommand udp are:
+
+:::bash
+	options:
+	  -h, --help            show this help message and exit
+	  -i IPADDRESS, --ipaddress IPADDRESS
+							Macloggerdx ip address [default: 127.0.0.1]
+	  -p PORT, --port PORT  Macloggerdx port number [default: 2237]
 
 
 ## Macro example
 
-```
-<NAME>, Thank you for the QSO on <BAND> / <MODE>.
-I look forward to seeing your signal on my waterfall, 73.
-QSL: LoTW, DIRECT
-<ZDT> <CALL> de <MYCALL> sk
-<RX>
-<EXEC>/usr/local/bin/fllog</EXEC>
-<LOG>
-```
+:::text
+	<NAME>, Thank you for the QSO on <BAND> / <MODE>.
+	I look forward to seeing your signal on my waterfall, 73.
+	QSL: LoTW, DIRECT
+	<ZDT> <CALL> de <MYCALL> sk
+	<RX>
+	<EXEC>/usr/local/bin/fllog pipe</EXEC>
+	<LOG>
+
+[1]: http://www.w1hkj.com/FldigiHelp/macros_sub_page.html
