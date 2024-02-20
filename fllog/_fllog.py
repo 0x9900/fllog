@@ -223,8 +223,9 @@ def dump_env(env, adif):
         val = val.replace('"', '\"')
         fdd.write(f'export {key}="{val}"\n')
       fdd.write("#" + "-" * 76 + "\n")
-      fdd.write(str(adif))
-      fdd.write("\n#" + "=" * 76 + "\n")
+      for line in str(adif).splitlines():
+        fdd.write(f'# {line}\n')
+      fdd.write("#" + "=" * 76 + "\n")
   except IOError as err:
     logging.error(err)
 
