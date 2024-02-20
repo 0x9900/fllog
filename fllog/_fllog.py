@@ -77,12 +77,12 @@ class ADIF(Mapping):
   def __str__(self):
     return '\n'.join([self.header, self.record])
 
-  def _get_time(self, field):
+  def _get_time(self):
     # Fldigi does weird things with the date and often likes to put a date far in the past.
     gmtnow = datetime.now(UTC)
     return gmtnow.strftime('%H%M%S')
 
-  def _get_date(self, field):
+  def _get_date(self):
     # Fldigi does weird things with the date and often likes to put a date far in the past.
     gmtnow = datetime.now(UTC)
     return gmtnow.strftime('%Y%m%d')
@@ -182,15 +182,15 @@ class ADIF(Mapping):
 
   @property
   def datetime_on(self):
-    _time = self._get_time('FLDIGI_LOGBOOK_TIME_ON')
-    _date = self._get_date('FLDIGI_LOGBOOK_DATE')
+    _time = self._get_time()
+    _date = self._get_date()
     _datetime = _date + _time
     return datetime.strptime(_datetime, '%Y%m%d%H%M%S')
 
   @property
   def datetime_off(self):
-    _time = self._get_time('FLDIGI_LOGBOOK_TIME_OFF')
-    _date = self._get_date('FLDIGI_LOGBOOK_DATE_OFF')
+    _time = self._get_time()
+    _date = self._get_date()
     _datetime = _date + _time
     return datetime.strptime(_datetime, '%Y%m%d%H%M%S')
 
