@@ -60,11 +60,6 @@ class ADIF(Mapping):
     self.modemap = modemap.MODEMap()
     self._data = data
 
-    # Fldigi does weird things with the date and often likes to put a
-    # date far in the past.
-    # Log today's
-    self.gmtnow = datetime.now(UTC)
-
   def __getitem__(self, key):
     if key in self._data:
       return self._data[key]
@@ -83,14 +78,14 @@ class ADIF(Mapping):
     return '\n'.join([self.header, self.record])
 
   def _get_time(self, field):
-    _tm = self.get(field)
-    _time = datetime.strptime(_tm, '%H:%M:%S') if _tm else self.gmtnow
-    return _time.strftime('%H%M%S')
+    # Fldigi does weird things with the date and often likes to put a date far in the past.
+    gmtnow = datetime.now(UTC)
+    return gmtnow.strftime('%H%M%S')
 
   def _get_date(self, field):
-    _dt = self.get(field)
-    _date = datetime.strptime(_dt, '%Y%m%d') if _dt else self.gmtnow
-    return _date.strftime('%Y%m%d')
+    # Fldigi does weird things with the date and often likes to put a date far in the past.
+    gmtnow = datetime.now(UTC)
+    return gmtnow.strftime('%Y%m%d')
 
   @property
   def header(self):
