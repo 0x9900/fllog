@@ -77,7 +77,7 @@ class ADIF(Mapping):
     return len(self._data)
 
   def who(self):
-    return self['FLDIGI_LOGBOOK_CALL']
+    return self.get('FLDIGI_LOG_CALL', self.get('FLDIGI_LOGBOOK_CALL'))
 
   def __str__(self):
     return '\n'.join([self.header, self.record])
@@ -123,7 +123,7 @@ class ADIF(Mapping):
 
   @property
   def call(self):
-    return self['FLDIGI_LOGBOOK_CALL']
+    return self.who()
 
   @property
   def mode(self):
@@ -315,10 +315,13 @@ def read_env():
 
 def main():
   opts = parse_arguments()
-
   env = read_env()
 
   adif = ADIF(env)
+  if not adif.call:
+    logging.error('Logging error: No call sign')
+    raise SystemExit('No call sign')
+
   if opts.debug:
     dump_env(env, adif)
   if opts.adif:
