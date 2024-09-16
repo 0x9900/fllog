@@ -291,7 +291,7 @@ def parse_arguments():
   p_netw.set_defaults(func=send_adif_udp)
   p_netw.add_argument('-i', '--ipaddress', default=IPADDR,
                       help="Macloggerdx ip address [default: %(default)s]")
-  p_netw.add_argument('-p', '--port', default=PORTNUM,
+  p_netw.add_argument('-p', '--port', type=int, default=PORTNUM,
                       help="Macloggerdx port number [default: %(default)s]")
   opts = parser.parse_args()
   return opts
